@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -5,14 +7,21 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin', 'prettier'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'prettier', 'import'],
   extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
   root: true,
   env: {
     node: true,
     jest: true,
   },
-  ignorePatterns: ['.eslintrc.js'],
+  settings: {
+    'import/resolver': {
+      typescript: {
+        project: path.resolve(__dirname, 'tsconfig.json'),
+      },
+    },
+  },
+  ignorePatterns: ['.eslintrc.js', 'dist/**', 'node_modules/**'],
   rules: {
     '@typescript-eslint/interface-name-prefix': 'off',
     '@typescript-eslint/explicit-function-return-type': 'off',
@@ -21,10 +30,18 @@ module.exports = {
     'prettier/prettier': [
       'error',
       {
-        printWidth: 120,
+        printWidth: 80,
         singleQuote: true,
         trailingComma: 'all',
         endOfLine: 'auto',
+      },
+    ],
+    'import/order': [
+      'error',
+      {
+        'newlines-between': 'always',
+        alphabetize: { order: 'asc', caseInsensitive: true },
+        groups: [['builtin', 'external'], 'internal', ['parent', 'sibling', 'index']],
       },
     ],
   },

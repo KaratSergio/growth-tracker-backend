@@ -16,6 +16,14 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@core/*": ["src/core/*"],
+      "@adapters/*": ["src/adapters/*"],
+      "@infrastructure/*": ["src/infrastructure/*"],
+      "@shared/*": ["src/shared/*"],
+      "@config/*": ["src/config/*"]
+    }
+  },
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
 }

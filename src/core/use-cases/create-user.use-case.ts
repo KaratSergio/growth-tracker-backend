@@ -17,15 +17,6 @@ export class CreateUserUseCase {
       passwordHash,
     };
 
-    const newUser = new User(
-      0,
-      userData.name,
-      userData.email,
-      userData.passwordHash,
-      new Date(),
-      new Date(),
-    );
-
-    return this.userRepository.create(newUser);
+    return this.userRepository.create(userData);
   }
 }

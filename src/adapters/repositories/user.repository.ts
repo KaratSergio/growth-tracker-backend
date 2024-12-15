@@ -2,24 +2,29 @@ import { Injectable } from '@nestjs/common';
 
 import { User } from '@core/entities/user.entity';
 import { UserRepository } from '@core/repositories/user.repository.interface';
-
-import { PrismaService } from './prisma.service';
+import { PrismaService } from '@infrastructure/database/prisma.service';
 
 @Injectable()
-export class PrismaUserRepository implements UserRepository {
+export class UserRepositoryAdapter implements UserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(userData: Omit<User, 'id'>): Promise<User> {
-    const createdUser = await this.prisma.user.create({
-      data: userData,
+  async create(
+    user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<User> {
+    const newUser = await this.prisma.user.create({
+      data: {
+        name: user.name,
+        email: user.email,
+        passwordHash: user.passwordHash,
+      },
     });
     return new User(
-      createdUser.id,
-      createdUser.name,
-      createdUser.email,
-      createdUser.passwordHash,
-      createdUser.createdAt,
-      createdUser.updatedAt,
+      newUser.id,
+      newUser.name,
+      newUser.email,
+      newUser.passwordHash,
+      newUser.createdAt,
+      newUser.updatedAt,
     );
   }
 

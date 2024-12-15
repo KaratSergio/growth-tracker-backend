@@ -1,18 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param, Delete } from '@nestjs/common';
 
-import { CreateUserDto } from '@adapters/dtos/create-user.dto';
-import { CreateUserUseCase } from '@core/use-cases/create-user.use-case';
-import { PrismaUserRepository } from '@infrastructure/database/prisma-user.repository';
+import { UserRepositoryAdapter } from '@adapters/repositories/user.repository';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userRepository: PrismaUserRepository) {}
-
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    const createUserUseCase = new CreateUserUseCase(this.userRepository);
-    return createUserUseCase.execute(createUserDto);
-  }
+  constructor(private readonly userRepository: UserRepositoryAdapter) {}
 
   @Get(':id')
   async findOne(@Param('id') id: number) {

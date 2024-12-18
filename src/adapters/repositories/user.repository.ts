@@ -29,6 +29,7 @@ export class UserRepositoryAdapter implements UserRepository {
   }
 
   async findById(id: number): Promise<User | null> {
+    console.log(`Searching for user with id: ${id}`);
     const user = await this.prisma.user.findUnique({ where: { id } });
     return user
       ? new User(
@@ -78,4 +79,46 @@ export class UserRepositoryAdapter implements UserRepository {
   async delete(id: number): Promise<void> {
     await this.prisma.user.delete({ where: { id } });
   }
+
+  async updateRefreshToken(
+    userId: number,
+    refreshToken: string,
+  ): Promise<void> {
+    console.log('Entering updateRefreshToken method');
+    console.log('Attempting to update refresh token for userId:', userId);
+
+    try {
+      const updatedUser = await this.prisma.user.update({
+        where: { id: userId },
+        data: { refreshToken },
+      });
+      console.log('User updated successfully:', updatedUser);
+    } catch (error) {
+      console.error('Error updating refresh token:', error);
+    }
+  }
+
+  async revokeToken(token: string): Promise<void> {
+    await this.prisma.revokedToken.create({
+      data: { token },
+    });
+  }
+
+  async isTokenRevoked(token: string): Promise<boolean> {
+    const revokedToken = await this.prisma.revokedToken.findUnique({
+      where: { token },
+    });
+    return !!revokedToken;
+  }
+
+  // private mapToEntity(user: any): User {
+  //   return new User(
+  //     user.id,
+  //     user.name,
+  //     user.email,
+  //     user.passwordHash,
+  //     user.createdAt,
+  //     user.updatedAt,
+  //   );
+  // }
 }

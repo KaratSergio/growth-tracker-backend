@@ -6,4 +6,8 @@ export interface UserRepository {
   findByEmail(email: string): Promise<User | null>;
   update(user: User): Promise<User>;
   delete(id: number): Promise<void>;
+
+  updateRefreshToken(userId: number, refreshToken: string): Promise<void>;
+  revokeToken(token: string): Promise<void>;
+  isTokenRevoked(token: string): Promise<boolean>;
 }

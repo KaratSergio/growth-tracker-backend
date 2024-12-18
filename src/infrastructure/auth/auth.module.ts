@@ -5,9 +5,12 @@ import { AuthController } from '@adapters/controllers/auth.controller';
 import { UserRepositoryAdapter } from '@adapters/repositories/user.repository';
 import { CreateUserUseCase } from '@core/use-cases/create-user.use-case';
 import { LoginUserUseCase } from '@core/use-cases/login-user.user-case';
+import { LogoutUserUseCase } from '@core/use-cases/logout-user.use-case';
+import { RefreshTokensUseCase } from '@core/use-cases/refresh-tokens.use-case';
 import { PrismaModule } from '@infrastructure/database/prisma.module';
 
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './jwt.guard';
 import { JwtStrategy } from './jwt.strategy';
 
 @Module({
@@ -21,9 +24,12 @@ import { JwtStrategy } from './jwt.strategy';
   controllers: [AuthController],
   providers: [
     AuthService,
+    JwtAuthGuard,
     JwtStrategy,
     CreateUserUseCase,
     LoginUserUseCase,
+    RefreshTokensUseCase,
+    LogoutUserUseCase,
     { provide: 'UserRepository', useClass: UserRepositoryAdapter },
   ],
   exports: [AuthService],

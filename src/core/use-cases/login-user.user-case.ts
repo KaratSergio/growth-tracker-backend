@@ -12,6 +12,9 @@ export class LoginUserUseCase {
       loginUserDto.email,
       loginUserDto.password,
     );
+    if (!user) {
+      throw new Error('Invalid user credentials');
+    }
     return this.authService.login(user);
   }
 }

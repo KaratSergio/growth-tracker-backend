@@ -18,6 +18,7 @@ model User {
   name         String
   email        String   @unique
   passwordHash String
+  refreshToken String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
   tasks        Task[]
@@ -71,4 +72,10 @@ model Note {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model RevokedToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  revokedAt DateTime @default(now())
 }

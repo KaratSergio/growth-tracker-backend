@@ -13,6 +13,39 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  async generateTokens(userId: number) {
+    const payload = { sub: userId };
+
+    const accessToken = this.jwtService.sign(payload, {
+      expiresIn: '15m',
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      expiresIn: '7d',
+    });
+
+    await this.userRepository.updateRefreshToken(userId, refreshToken);
+    return { accessToken, refreshToken };
+  }
+
+  async refreshTokens(userId: number, refreshToken: string) {
+    const user = await this.userRepository.findById(userId);
+
+    console.log('Found user:', user);
+
+    if (!user || user.refreshToken !== refreshToken) {
+      console.log(`Stored refresh token: ${user.refreshToken}`);
+      console.log(`Provided refresh token: ${refreshToken}`);
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    return this.generateTokens(userId);
+  }
+
+  async revokeAccessToken(token: string) {
+    await this.userRepository.revokeToken(token);
+  }
+
   async validateUser(email: string, password: string): Promise<User> {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
@@ -27,8 +60,14 @@ export class AuthService {
     return user;
   }
 
-  async login(user: User): Promise<{ accessToken: string }> {
-    const payload = { id: user.id, email: user.email };
-    return { accessToken: this.jwtService.sign(payload) };
+  async login(
+    user: User,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
+    return this.generateTokens(user.id);
+  }
+
+  async logout(userId: number, accessToken: string) {
+    await this.revokeAccessToken(accessToken);
+    await this.userRepository.updateRefreshToken(userId, null);
   }
 }

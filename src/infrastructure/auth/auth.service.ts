@@ -34,8 +34,6 @@ export class AuthService {
     console.log('Found user:', user);
 
     if (!user || user.refreshToken !== refreshToken) {
-      console.log(`Stored refresh token: ${user.refreshToken}`);
-      console.log(`Provided refresh token: ${refreshToken}`);
       throw new UnauthorizedException('Invalid refresh token');
     }
 

@@ -39,6 +39,7 @@ export class UserRepositoryAdapter implements UserRepository {
           user.passwordHash,
           user.createdAt,
           user.updatedAt,
+          user.refreshToken,
         )
       : null;
   }
@@ -82,20 +83,12 @@ export class UserRepositoryAdapter implements UserRepository {
 
   async updateRefreshToken(
     userId: number,
-    refreshToken: string,
+    refreshToken: string | null,
   ): Promise<void> {
-    console.log('Entering updateRefreshToken method');
-    console.log('Attempting to update refresh token for userId:', userId);
-
-    try {
-      const updatedUser = await this.prisma.user.update({
-        where: { id: userId },
-        data: { refreshToken },
-      });
-      console.log('User updated successfully:', updatedUser);
-    } catch (error) {
-      console.error('Error updating refresh token:', error);
-    }
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken },
+    });
   }
 
   async revokeToken(token: string): Promise<void> {
@@ -110,15 +103,4 @@ export class UserRepositoryAdapter implements UserRepository {
     });
     return !!revokedToken;
   }
-
-  // private mapToEntity(user: any): User {
-  //   return new User(
-  //     user.id,
-  //     user.name,
-  //     user.email,
-  //     user.passwordHash,
-  //     user.createdAt,
-  //     user.updatedAt,
-  //   );
-  // }
 }

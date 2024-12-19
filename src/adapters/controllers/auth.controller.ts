@@ -7,6 +7,7 @@ import { RefreshTokensUseCase } from '@core/use-cases/refresh-tokens.use-case';
 import { JwtAuthGuard } from '@infrastructure/auth/jwt.guard';
 import { CreateUserDto } from '@shared/dtos/create-user.dto';
 import { LoginUserDto } from '@shared/dtos/login-user.dto';
+import { RefreshTokensDto } from '@shared/dtos/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,17 +19,8 @@ export class AuthController {
   ) {}
 
   @Post('refresh')
-  async refreshTokens(
-    @Body('userId') userId: number,
-    @Body('refreshToken') refreshToken: string,
-  ) {
-    console.log(`Received userId: ${userId}, refreshToken: ${refreshToken}`);
-
-    if (!userId) {
-      throw new Error('Invalid userId in request body');
-    }
-
-    return this.refreshTokensUseCase.execute(userId, refreshToken);
+  async refreshTokens(@Body() refreshTokensDto: RefreshTokensDto) {
+    return this.refreshTokensUseCase.execute(refreshTokensDto);
   }
 
   @Post('register')
@@ -44,8 +36,6 @@ export class AuthController {
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   async logout(@Req() req: any) {
-    const userId = req.user.id;
-    const token = req.headers.authorization.split(' ')[1];
-    await this.logoutUserUseCase.execute(userId, token);
+    await this.logoutUserUseCase.execute(req);
   }
 }

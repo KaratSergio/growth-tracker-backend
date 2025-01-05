@@ -11,6 +11,16 @@ export class UserRepositoryAdapter implements UserRepository {
   async create(
     user: Omit<User, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<User> {
+    const existingUser = await this.prisma.user.findUnique({
+      where: {
+        email: user.email,
+      },
+    });
+
+    if (existingUser) {
+      throw new Error('A user with this email already exists');
+    }
+
     const newUser = await this.prisma.user.create({
       data: {
         name: user.name,
